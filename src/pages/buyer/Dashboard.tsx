@@ -1,8 +1,10 @@
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { useBlockchain } from "@/contexts/BlockchainContext";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { Avatar } from "@/components/ui/avatar";
 import { 
   TrendingUp, 
   Clock, 
@@ -74,6 +76,33 @@ const recentActivities = [
   { text: "New message from agent regarding packaging options", time: "3 days ago" }
 ];
 
+const recentMessages = [
+  {
+    id: 1,
+    sender: "Rahul Sharma",
+    avatar: "/placeholder.svg",
+    message: "Hi there! I've sourced the materials you requested for the bamboo utensils project.",
+    time: "Just now",
+    unread: true
+  },
+  {
+    id: 2,
+    sender: "Priya Patel",
+    avatar: "/placeholder.svg",
+    message: "The cotton samples are ready for your review. When would you like to schedule a call?",
+    time: "1 hour ago",
+    unread: true
+  },
+  {
+    id: 3,
+    sender: "Amit Verma",
+    avatar: "/placeholder.svg",
+    message: "I've updated the shipping documentation for your order. Please check and approve.",
+    time: "Yesterday",
+    unread: false
+  }
+];
+
 const BuyerDashboard = () => {
   const { isConnected, balance, transactions } = useBlockchain();
 
@@ -140,7 +169,31 @@ const BuyerDashboard = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            
+            <div className="space-y-4">
+              {recentMessages.map((msg) => (
+                <div key={msg.id} className={`p-3 rounded-lg ${msg.unread ? "bg-blue-50" : "bg-gray-50"} hover:bg-gray-100 transition-colors cursor-pointer`}>
+                  <div className="flex items-start gap-3">
+                    <Avatar>
+                      <img src={msg.avatar} alt={msg.sender} className="rounded-full" />
+                    </Avatar>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between">
+                        <p className="font-medium truncate">{msg.sender}</p>
+                        <p className="text-xs text-gray-500">{msg.time}</p>
+                      </div>
+                      <p className="text-sm text-gray-600 line-clamp-2 mt-1">{msg.message}</p>
+                    </div>
+                    {msg.unread && (
+                      <span className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></span>
+                    )}
+                  </div>
+                </div>
+              ))}
+              <Button variant="outline" className="w-full">
+                View All Messages
+                <ChevronRight className="h-4 w-4 ml-1" />
+              </Button>
+            </div>
           </CardContent>
         </Card>
       </div>
