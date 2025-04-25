@@ -1,4 +1,3 @@
-
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,8 +5,14 @@ import {
   Package,
   ShoppingCart,
   DollarSign,
-  TrendingUp
+  TrendingUp,
+  Calendar,
+  Users,
+  AlertCircle,
+  ChevronRight
 } from "lucide-react";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
 
 const mockStats = [
   {
@@ -38,6 +43,19 @@ const mockStats = [
     change: "+2 today",
     color: "text-purple-600"
   }
+];
+
+const upcomingTasks = [
+  { task: "Quality inspection for order #ORD-7829", date: "Today, 2:00 PM", priority: "High" },
+  { task: "Review new supplier application", date: "Tomorrow, 10:00 AM", priority: "Medium" },
+  { task: "Update product catalog", date: "Apr 27, 2025", priority: "Low" }
+];
+
+const salesData = [
+  { month: "Jan", sales: 12000 },
+  { month: "Feb", sales: 15000 },
+  { month: "Mar", sales: 18000 },
+  { month: "Apr", sales: 16500 }
 ];
 
 const recentOrders = [
@@ -76,13 +94,13 @@ const SellerDashboard = () => {
     <DashboardLayout title="Seller Dashboard" userType="seller">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
         {mockStats.map((stat, index) => (
-          <Card key={index}>
+          <Card key={index} className="hover:shadow-lg transition-shadow">
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <div className={`p-2 rounded-full bg-opacity-10 ${stat.color.replace("text-", "bg-")}`}>
                   <stat.icon className={`h-6 w-6 ${stat.color}`} />
                 </div>
-                <span className="text-xs text-green-600 font-medium">{stat.change}</span>
+                <Badge variant="outline" className={stat.color}>{stat.change}</Badge>
               </div>
               <div>
                 <h3 className="text-sm font-medium text-gray-500">{stat.title}</h3>
@@ -92,72 +110,119 @@ const SellerDashboard = () => {
           </Card>
         ))}
       </div>
-      
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>Recent Orders</CardTitle>
-              <Button variant="outline" size="sm">View All</Button>
-            </CardHeader>
-            <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="text-left">
-                      <th className="pb-3 text-sm font-medium text-gray-500">Order ID</th>
-                      <th className="pb-3 text-sm font-medium text-gray-500">Buyer</th>
-                      <th className="pb-3 text-sm font-medium text-gray-500">Items</th>
-                      <th className="pb-3 text-sm font-medium text-gray-500">Amount</th>
-                      <th className="pb-3 text-sm font-medium text-gray-500">Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {recentOrders.map((order) => (
-                      <tr key={order.id} className="border-t border-gray-100">
-                        <td className="py-3 text-sm">{order.id}</td>
-                        <td className="py-3 text-sm">{order.buyer}</td>
-                        <td className="py-3 text-sm">{order.items}</td>
-                        <td className="py-3 text-sm font-medium">{order.amount}</td>
-                        <td className="py-3 text-sm">
-                          <span 
-                            className={`
-                              px-2 py-1 rounded-full text-xs font-medium
-                              ${order.status === "Processing" ? "bg-yellow-100 text-yellow-800" :
-                                order.status === "Shipped" ? "bg-blue-100 text-blue-800" :
-                                "bg-green-100 text-green-800"}
-                            `}
-                          >
-                            {order.status}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-        
-        <div>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>Notifications</CardTitle>
-              <Button variant="ghost" size="sm">Mark all read</Button>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {notifications.map((notification, index) => (
-                  <div key={index} className="flex flex-col border-b border-gray-100 pb-3 last:border-0">
-                    <p className="text-sm">{notification.message}</p>
-                    <span className="text-xs text-gray-500 mt-1">{notification.time}</span>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <Card className="col-span-1">
+          <CardHeader>
+            <CardTitle className="text-xl flex items-center gap-2">
+              <Calendar className="h-5 w-5 text-gray-500" />
+              Upcoming Tasks
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {upcomingTasks.map((task, index) => (
+                <div key={index} className="flex items-start justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                  <div className="flex-1">
+                    <p className="font-medium mb-1">{task.task}</p>
+                    <p className="text-sm text-gray-500">{task.date}</p>
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
+                  <Badge 
+                    className={
+                      task.priority === "High" ? "bg-red-100 text-red-800" :
+                      task.priority === "Medium" ? "bg-yellow-100 text-yellow-800" :
+                      "bg-green-100 text-green-800"
+                    }
+                  >
+                    {task.priority}
+                  </Badge>
+                </div>
+              ))}
+              <Button variant="outline" className="w-full mt-2">
+                View All Tasks
+                <ChevronRight className="h-4 w-4 ml-1" />
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="col-span-1">
+          <CardHeader>
+            <CardTitle className="text-xl flex items-center gap-2">
+              <TrendingUp className="h-5 w-5 text-gray-500" />
+              Sales Overview
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-6">
+              {salesData.map((data, index) => (
+                <div key={index}>
+                  <div className="flex justify-between mb-2">
+                    <span className="text-sm font-medium">{data.month}</span>
+                    <span className="text-sm font-medium">${data.sales.toLocaleString()}</span>
+                  </div>
+                  <Progress value={(data.sales / 20000) * 100} className="h-2" />
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <Card className="lg:col-span-2">
+          <CardHeader>
+            <CardTitle className="text-xl flex items-center gap-2">
+              <AlertCircle className="h-5 w-5 text-gray-500" />
+              Recent Activities
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {notifications.map((notification, index) => (
+                <div key={index} className="flex flex-col border-b border-gray-100 pb-3 last:border-0">
+                  <p className="text-sm">{notification.message}</p>
+                  <span className="text-xs text-gray-500 mt-1">{notification.time}</span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-xl flex items-center gap-2">
+              <Users className="h-5 w-5 text-gray-500" />
+              Top Buyers
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4">
+              {recentOrders.map((order) => (
+                <div key={order.id} className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <p className="text-sm font-medium">{order.id}</p>
+                    <p className="text-sm text-gray-500">{order.buyer}</p>
+                  </div>
+                  <div className="flex items-center">
+                    <p className="text-sm font-medium">{order.items}</p>
+                    <p className="text-sm text-gray-500">{order.amount}</p>
+                  </div>
+                  <span 
+                    className={`
+                      px-2 py-1 rounded-full text-xs font-medium
+                      ${order.status === "Processing" ? "bg-yellow-100 text-yellow-800" :
+                        order.status === "Shipped" ? "bg-blue-100 text-blue-800" :
+                        "bg-green-100 text-green-800"}
+                    `}
+                  >
+                    {order.status}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </DashboardLayout>
   );
