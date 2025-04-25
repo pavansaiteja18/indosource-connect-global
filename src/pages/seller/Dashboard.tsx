@@ -1,6 +1,9 @@
+
 import DashboardLayout from "@/components/layouts/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import SalesChart from "@/components/charts/SalesChart";
+import ProductPerformanceChart from "@/components/charts/ProductPerformanceChart";
 import {
   Package,
   ShoppingCart,
@@ -49,13 +52,6 @@ const upcomingTasks = [
   { task: "Quality inspection for order #ORD-7829", date: "Today, 2:00 PM", priority: "High" },
   { task: "Review new supplier application", date: "Tomorrow, 10:00 AM", priority: "Medium" },
   { task: "Update product catalog", date: "Apr 27, 2025", priority: "Low" }
-];
-
-const salesData = [
-  { month: "Jan", sales: 12000 },
-  { month: "Feb", sales: 15000 },
-  { month: "Mar", sales: 18000 },
-  { month: "Apr", sales: 16500 }
 ];
 
 const recentOrders = [
@@ -112,6 +108,11 @@ const SellerDashboard = () => {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <SalesChart />
+        <ProductPerformanceChart />
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <Card className="col-span-1">
           <CardHeader>
             <CardTitle className="text-xl flex items-center gap-2">
@@ -149,30 +150,6 @@ const SellerDashboard = () => {
         <Card className="col-span-1">
           <CardHeader>
             <CardTitle className="text-xl flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-gray-500" />
-              Sales Overview
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-6">
-              {salesData.map((data, index) => (
-                <div key={index}>
-                  <div className="flex justify-between mb-2">
-                    <span className="text-sm font-medium">{data.month}</span>
-                    <span className="text-sm font-medium">${data.sales.toLocaleString()}</span>
-                  </div>
-                  <Progress value={(data.sales / 20000) * 100} className="h-2" />
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="text-xl flex items-center gap-2">
               <AlertCircle className="h-5 w-5 text-gray-500" />
               Recent Activities
             </CardTitle>
@@ -180,34 +157,41 @@ const SellerDashboard = () => {
           <CardContent>
             <div className="space-y-4">
               {notifications.map((notification, index) => (
-                <div key={index} className="flex flex-col border-b border-gray-100 pb-3 last:border-0">
+                <div key={index} className="flex flex-col border-b border-gray-100 pb-3 last:border-0 hover:bg-gray-50 p-2 rounded-md transition-colors">
                   <p className="text-sm">{notification.message}</p>
                   <span className="text-xs text-gray-500 mt-1">{notification.time}</span>
                 </div>
               ))}
+              <Button variant="outline" className="w-full">
+                View All Notifications
+                <ChevronRight className="h-4 w-4 ml-1" />
+              </Button>
             </div>
           </CardContent>
         </Card>
+      </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-xl flex items-center gap-2">
-              <Users className="h-5 w-5 text-gray-500" />
-              Top Buyers
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {recentOrders.map((order) => (
-                <div key={order.id} className="flex items-center justify-between">
-                  <div className="flex-1">
-                    <p className="text-sm font-medium">{order.id}</p>
-                    <p className="text-sm text-gray-500">{order.buyer}</p>
-                  </div>
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-xl flex items-center gap-2">
+            <Users className="h-5 w-5 text-gray-500" />
+            Top Buyers
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            {recentOrders.map((order) => (
+              <div key={order.id} className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                <div className="flex-1">
+                  <p className="text-sm font-medium">{order.buyer}</p>
                   <div className="flex items-center">
-                    <p className="text-sm font-medium">{order.items}</p>
-                    <p className="text-sm text-gray-500">{order.amount}</p>
+                    <span className="text-xs text-marketplace-blue font-medium">{order.id}</span>
+                    <span className="mx-2 text-gray-300">•</span>
+                    <span className="text-xs text-gray-500">{order.items}</span>
                   </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <p className="text-sm font-medium">{order.amount}</p>
                   <span 
                     className={`
                       px-2 py-1 rounded-full text-xs font-medium
@@ -219,11 +203,15 @@ const SellerDashboard = () => {
                     {order.status}
                   </span>
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+              </div>
+            ))}
+            <Button variant="outline" className="w-full">
+              View All Buyers
+              <ChevronRight className="h-4 w-4 ml-1" />
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </DashboardLayout>
   );
 };

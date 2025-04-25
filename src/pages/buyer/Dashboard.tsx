@@ -5,6 +5,7 @@ import { useBlockchain } from "@/contexts/BlockchainContext";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Avatar } from "@/components/ui/avatar";
+import TransactionVisualizer from "@/components/blockchain/TransactionVisualizer";
 import { 
   TrendingUp, 
   Clock, 
@@ -104,7 +105,7 @@ const recentMessages = [
 ];
 
 const BuyerDashboard = () => {
-  const { isConnected, balance, transactions } = useBlockchain();
+  const { isConnected, balance } = useBlockchain();
 
   return (
     <DashboardLayout title="Buyer Dashboard" userType="buyer">
@@ -146,7 +147,7 @@ const BuyerDashboard = () => {
                       <p className="font-medium">{milestone.project}</p>
                       <p className="text-sm text-gray-500">{milestone.milestone} • {milestone.date}</p>
                     </div>
-                    <Badge variant="outline">
+                    <Badge variant="outline" className="animate-pulse-slow">
                       {milestone.progress}%
                     </Badge>
                   </div>
@@ -171,7 +172,10 @@ const BuyerDashboard = () => {
           <CardContent>
             <div className="space-y-4">
               {recentMessages.map((msg) => (
-                <div key={msg.id} className={`p-3 rounded-lg ${msg.unread ? "bg-blue-50" : "bg-gray-50"} hover:bg-gray-100 transition-colors cursor-pointer`}>
+                <div 
+                  key={msg.id} 
+                  className={`p-3 rounded-lg ${msg.unread ? "bg-blue-50" : "bg-gray-50"} hover:bg-gray-100 transition-colors cursor-pointer`}
+                >
                   <div className="flex items-start gap-3">
                     <Avatar>
                       <img src={msg.avatar} alt={msg.sender} className="rounded-full" />
@@ -184,7 +188,7 @@ const BuyerDashboard = () => {
                       <p className="text-sm text-gray-600 line-clamp-2 mt-1">{msg.message}</p>
                     </div>
                     {msg.unread && (
-                      <span className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></span>
+                      <span className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0 animate-pulse"></span>
                     )}
                   </div>
                 </div>
@@ -210,11 +214,17 @@ const BuyerDashboard = () => {
             <CardContent>
               <div className="space-y-5">
                 {recentActivities.map((activity, index) => (
-                  <div key={index} className="flex items-center justify-between border-b border-gray-100 pb-4 last:border-0 last:pb-0">
+                  <div 
+                    key={index} 
+                    className="flex items-center justify-between border-b border-gray-100 pb-4 last:border-0 last:pb-0 hover:bg-gray-50 p-2 rounded-md transition-colors"
+                  >
                     <div>
                       <p className="text-sm">{activity.text}</p>
                       <p className="text-xs text-gray-500">{activity.time}</p>
                     </div>
+                    <Button variant="ghost" size="sm">
+                      View
+                    </Button>
                   </div>
                 ))}
               </div>
@@ -222,40 +232,51 @@ const BuyerDashboard = () => {
           </Card>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Wallet Overview</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {isConnected ? (
-              <div>
+        <Card className="lg:col-span-1">
+          {isConnected ? (
+            <div>
+              <CardHeader>
+                <CardTitle>Wallet Overview</CardTitle>
+              </CardHeader>
+              <CardContent>
                 <div className="mb-4">
                   <p className="text-sm text-gray-500">Current Balance</p>
-                  <p className="text-3xl font-bold">{balance.toFixed(2)} ETH</p>
+                  <div className="flex items-baseline">
+                    <p className="text-3xl font-bold animate-pulse-slow">{balance.toFixed(2)} ETH</p>
+                    <Badge variant="outline" className="ml-2 text-green-600">+2.5%</Badge>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">≈ ${(balance * 3480).toFixed(2)} USD</p>
                 </div>
                 
-                <div>
-                  <p className="text-sm text-gray-500 mb-2">Recent Transactions</p>
-                  <div className="space-y-3">
-                    {transactions.slice(0, 3).map((tx, index) => (
-                      <div key={index} className="flex items-center justify-between text-sm">
-                        <span className="truncate max-w-[150px]">{tx.description}</span>
-                        <span className={tx.from === tx.to ? "text-gray-600" : tx.from === tx.to ? "text-green-600" : "text-red-600"}>
-                          {tx.from === tx.to ? "" : tx.from === tx.to ? "+" : "-"}{tx.amount.toFixed(2)} ETH
-                        </span>
-                      </div>
-                    ))}
+                <div className="my-6">
+                  <div className="flex justify-between items-center mb-2">
+                    <p className="text-sm text-gray-500">Wallet Security</p>
+                    <Badge className="bg-green-100 text-green-800">Protected</Badge>
                   </div>
+                  <Progress value={90} className="h-1" />
                 </div>
-              </div>
-            ) : (
-              <div className="text-center py-4">
-                <p className="text-gray-500 mb-4">Connect your wallet to view balance and transactions</p>
-                <p className="text-sm text-gray-400">Use the wallet button in the sidebar to connect</p>
-              </div>
-            )}
-          </CardContent>
+                
+                <div className="flex justify-between my-4 text-sm">
+                  <Button variant="outline" size="sm" className="w-[48%]">
+                    Deposit
+                  </Button>
+                  <Button variant="outline" size="sm" className="w-[48%]">
+                    Withdraw
+                  </Button>
+                </div>
+              </CardContent>
+            </div>
+          ) : (
+            <div className="text-center py-4">
+              <p className="text-gray-500 mb-4">Connect your wallet to view balance and transactions</p>
+              <p className="text-sm text-gray-400">Use the wallet button in the sidebar to connect</p>
+            </div>
+          )}
         </Card>
+      </div>
+        
+      <div className="mt-6">
+        <TransactionVisualizer />
       </div>
     </DashboardLayout>
   );
